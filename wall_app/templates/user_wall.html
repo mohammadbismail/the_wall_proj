@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User wall</title>
+    {% load static %}
+    <link rel="stylesheet" href="{%static 'css/style2.css'%}">
+</head>
+
+<body>
+    <header>
+        <h1>Success! Welcome, {{request.session.usrname}}!</h1>
+        <a href="/logout">Logout</a>
+    </header>
+    <hr>
+    <form action="/wall/add_message/" method="post">
+        {% csrf_token %}
+        <label for="message">Post A Message</label><br>
+        <input type="hidden" name="userid" value="{{user.id}}">
+        <textarea name="msg" id="message" cols="50" rows="3"></textarea><br>
+        <button type="submit">Post a message</button>
+    </form>
+    {% for user in users %}
+    {{user.message}}
+    {% for message in messages reversed %}
+    <ul>
+        <li>
+            <h4><strong>Message by:{{user.first_name}} {{ user.last_name}}, at {{message.created_at}}</strong></h4>
+            <p>Message Content: {{message.content}}</p>
+        </li>
+    </ul>
+    {% for comment in message.comments.all %}
+    <ul>
+        <li>
+            <h4><strong>Comment by: {{comment.user.first_name}} {{comment.user.last_name}} at
+                    {{comment.message.created_at}}</strong></h4>
+            <p>{{comment.content}}</p>
+        </li>
+    </ul>
+    {% endfor%}
+    <form action="/wall/add_comment/" method="post">
+        {% csrf_token %}
+        <label for="comment">Post A Comment</label><br>
+        <input type="hidden" name="msgid" value="{{message.id}}">
+        <input type="hidden" name="userid" value="{{user.id}}">
+        <textarea name="comment" id="comment" cols="50" rows="3"></textarea><br>
+        <button type="submit">Post a comment</button>
+    </form>
+    {% endfor%}
+    {% endfor%}
+</body>
+
+</html>
