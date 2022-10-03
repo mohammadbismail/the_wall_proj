@@ -49,6 +49,8 @@ def logout_user(request):
 
 
 def user_wall_page(request):
+    if "userid" not in request.session:
+        return redirect("/")
     context = {
         "user": User.objects.get(id=request.session["userid"]),
         "users": User.objects.all(),
